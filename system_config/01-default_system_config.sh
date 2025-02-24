@@ -1,4 +1,4 @@
-# Output is too large for the konsole windows, copy STDERR and STDOUT into a textfile by using this command:
+# Output can be too large for the konsole windows, copy STDERR and STDOUT into a textfile by using this command:
 # sudo bash ./01-default_system_config.sh |& tee "$HOME/01-default_system_config.log"
 
 if [ -z "${SUDO_USER}" ]; then
@@ -41,3 +41,6 @@ echo
 
 cp -v /usr/share/doc/pipewire/examples/ld.so.conf.d/pipewire-jack-*.conf /etc/ld.so.conf.d/
 ldconfig
+echo
+
+echo "Please reboot to apply all systems settings"

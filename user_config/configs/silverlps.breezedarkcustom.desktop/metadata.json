@@ -1,0 +1,20 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "SilverLPs"
+            }
+        ],
+        "Category": "",
+        "Description": "Breeze Dark Custom by SilverLPs",
+        "Id": "silverlps.breezedarkcustom.desktop",
+        "License": "GPLv2+",
+        "Name": "SilverLPs Breeze Dark Custom",
+        "ServiceTypes": [
+            "Plasma/LookAndFeel"
+        ],
+        "Version": "2.0",
+        "Website": "https://github.com/SilverLPs/kubuntu2404-configs"
+    },
+    "X-Plasma-MainScript": "defaults"
+}

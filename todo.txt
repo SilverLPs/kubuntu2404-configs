@@ -1,0 +1,2 @@
+- KDE Configs have to be GPL as I used them as template
+- Rest can be MIT

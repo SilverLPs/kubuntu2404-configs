@@ -29,9 +29,11 @@ busctl call com.ubuntu.WhoopsiePreferences /com/ubuntu/WhoopsiePreferences com.u
 busctl call com.ubuntu.WhoopsiePreferences /com/ubuntu/WhoopsiePreferences com.ubuntu.WhoopsiePreferences SetReportMetrics b false
 #Kann geprüft werden mit cat /etc/whoopsie (dort ist nur die Metrics Option) und systemctl status whoopsie.path (muss auf disabled stehen)
 
-kwriteconfig5 --file kwalletrc --group Wallet --key "Enabled" --type bool false
-kwriteconfig5 --file kwalletrc --group org.freedesktop.secrets --key "apiEnabled" --type bool false
-busctl --user call org.kde.kwalletd5 /modules/kwalletd5 org.kde.KWallet reconfigure
+#Das deaktiviert tatsächlich KWallet, allerdings führt das zu anderen Problemen, Anwendungen wie Vivaldi speichern dann nicht mehr richtig, ggf. ist abschalten doch nicht die beste Option... Vlt. lohnt es sich das Passwort leer zu machen, was effektiv wohl die Passwortabfragen deakiviert, auch bei Autologin. Ist natürlich unsicher, allerdings ist Leerzeichen als Userpassword dann auch das Passwort des Wallets und das ist auch nicht besser, nur nerviger bei Autologin. Vlt. gibt es eine Lösung die das Wallet Passwort bei Autologin immer mitentsperrt. Sonst lohnt es sich wohlmöglich gar nicht. Sonst sollte wohlmöglich Autologin einfach nicht verwendet werden, die Einstellungen warnen eh den Nutzer davor, dass es zu Problemen mit KWallet führt, oder eine Art Autounlock wie hier https://www.reddit.com/r/kde/comments/ybp191/how_to_auto_unlock_kwallet/?tl=de oder ich könnte austesten, immer eine Nachfrage auf den Zugriff zu machen, und den vlt. pro Programm immer zu erlauben, falls das geht siehe hier grünes Feld: https://wiki.archlinux.org/title/KDE_Wallet
+#kwriteconfig5 --file kwalletrc --group Wallet --key "Enabled" --type bool false
+#kwriteconfig5 --file kwalletrc --group org.freedesktop.secrets --key "apiEnabled" --type bool false
+#busctl --user call org.kde.kwalletd5 /modules/kwalletd5 org.kde.KWallet reconfigure
+
 
 #Dateiformate wie xml und json nicht mit Firefox, sondern mit Kate öffnen
 #Multimediaformate an VLC schicken

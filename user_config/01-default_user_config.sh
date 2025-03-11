@@ -13,22 +13,43 @@ echo
 plasma-apply-lookandfeel -a silverlps.breezedarkcustom.desktop --resetLayout
 
 # kwriteconfig5 is fully idempotent and automatically creates config files and even folders if necessary, which makes mkdir or touch commands obsolete
+
+# Disable KDE splash screen (useless and increases session load time)
 kwriteconfig5 --file ksplashrc --group 'KSplash' --key 'Engine' 'none'
 kwriteconfig5 --file ksplashrc --group 'KSplash' --key 'Theme' 'none'
+
+# Disable bouncing cursor icons on application start
 kwriteconfig5 --file klaunchrc --group 'FeedbackStyle' --key 'BusyCursor' --type bool false
+
+# Disable animations for application preview popups in taskbar (these are plagued by heavy graphical glitches)
 kwriteconfig5 --file kwinrc --group 'Plugins' --key 'kwin4_effect_fadingpopupsEnabled' --type bool false
 kwriteconfig5 --file kwinrc --group 'Plugins' --key 'kwin4_effect_morphingpopupsEnabled' --type bool false
+
+# Disable trigger of activating the window overview by putting the mouse in the top left corner of the screen (is triggered to easily and can interfere in daily operation when using maximized applications)
 kwriteconfig5 --file kwinrc --group 'Effect-windowview' --key 'BorderActivateAll' '9'
+
+# Adding shortcut Meta+W to the triggers for the window overview and also removing the original Meta+W shortcut from the triggers for the activity switcher to avoid a duplicate shortcut trigger
 # WARNING Part of these values in kglobalshortcutsrc are in German, which could lead to problems when the systems/users language is different, it looks like most of them start in English even on a German system, and then the System settings app will change them on the fly to english as the user goes through the options, which would mean, that I could just set it to the english value with this script and on a different language system KDE will set it to the local language automatically without any problems
 kwriteconfig5 --file kglobalshortcutsrc --group 'kwin' --key 'Overview' 'Meta+W\tMeta+Tab,Meta+W,Übersicht umschalten'
 #Geändert auf einfache Anführungszeichen, prüfen ob \t nach sed korrekt entfernt und alles richtig ist!
+# kwriteconfig5 has a bug that makes it impossible to correctly process the \t, it will always make \\t out of it. The sed command is necessary to fix that.
 sed -i '/Overview/s/\\\\t/\\t/g' "$HOME/.config/kglobalshortcutsrc"
 kwriteconfig5 --file kglobalshortcutsrc --group 'plasmashell' --key 'next activity' 'none,Meta+Tab,Zwischen Aktivitäten wechseln'
+
+# Configuring timeout to 90 minutes for activating the lock screen (conservative value in my opinion)
 kwriteconfig5 --file kscreenlockerrc --group 'Daemon' --key 'Timeout' '90'
+
+# Configuring lock screen wallpaper
 kwriteconfig5 --file kscreenlockerrc --group 'Greeter' --group 'Wallpaper' --group 'org.kde.image' --group 'General' --key 'Image' '/usr/share/wallpapers/Next/'
 kwriteconfig5 --file kscreenlockerrc --group 'Greeter' --group 'Wallpaper' --group 'org.kde.image' --group 'General' --key 'PreviewImage' '/usr/share/wallpapers/Next/'
+
+# Configuring plasma to always start with a fresh session (aka not reopening the last sessions applications etc)
 kwriteconfig5 --file ksmserverrc --group 'General' --key 'loginMode' 'emptySession'
+
+# Configuring plasma to always enable NumLock at the start of a new session (should be default imo, who needs the other features of NumLock outside of games anyway??)
 kwriteconfig5 --file kcminputrc --group 'Keyboard' --key 'NumLock' '0'
+
+# Enabling visibility for virtual networks in the network configuration section in the system settings app
 kwriteconfig5 --file plasma-nm --group 'General' --key 'ManageVirtualConnections' --type bool true
 
 # Implements a basic stock profile picture for the user account to overwrite the Kubuntu icon profile picture
@@ -52,7 +73,7 @@ busctl call com.ubuntu.WhoopsiePreferences /com/ubuntu/WhoopsiePreferences com.u
 busctl call com.ubuntu.WhoopsiePreferences /com/ubuntu/WhoopsiePreferences com.ubuntu.WhoopsiePreferences SetReportMetrics b false
 #Kann geprüft werden mit cat /etc/whoopsie (dort ist nur die Metrics Option) und systemctl status whoopsie.path (muss auf disabled stehen)
 
-# Install basic system tool flatpaks
+# Install basic system tools flatpaks
 flatpak install --noninteractive flathub com.github.tchx84.Flatseal
 flatpak install --noninteractive flathub org.localsend.localsend_app
 flatpak install --noninteractive flathub org.rncbc.qpwgraph
@@ -63,13 +84,14 @@ echo "The following mv command is just a safety mechanism to prevent kwriteconfi
 mv "$HOME/.var/app/org.rncbc.qpwgraph/config/rncbc.org/qpwgraph.conf" "$HOME/.var/app/org.rncbc.qpwgraph/config/rncbc.org/qpwgraph.conf.bak"-"$(date +\%Y\%m\%d)-$(date +\%H\%M\%S)"
 kwriteconfig5 --file "$HOME/.var/app/org.rncbc.qpwgraph/config/rncbc.org/qpwgraph.conf" --group 'SystemTray' --key 'Enabled' --type bool false
 
-# MIME type associations
+# MIME type associations for default applications that open specified filetypes
 # This should be run after software installations to make sure new software installs don't overwrite the MIME type associations again.
+# Debian package files should always be opened with Discovery (as QApt is really buggy):
 xdg-mime default org.kde.discover.desktop application/vnd.debian.binary-package
-
+# XML and JSON should be opened with a text editor (and not a web browser):
 xdg-mime default org.kde.kate.desktop application/json
 xdg-mime default org.kde.kate.desktop application/xml
-
+# Video files should all be opened with VLC media player (if possible, this contains only formats that are declared as compatible to VLC):
 xdg-mime default vlc.desktop application/mxf
 xdg-mime default vlc.desktop application/sdp
 xdg-mime default vlc.desktop application/vnd.adobe.flash.movie
@@ -106,7 +128,7 @@ xdg-mime default vlc.desktop video/x-theora+ogg
 xdg-mime default vlc.desktop x-content/video-dvd
 xdg-mime default vlc.desktop x-content/video-svcd
 xdg-mime default vlc.desktop x-content/video-vcd
-
+# Audio files should all be opened with VLC media player (if possible, this contains only formats that are declared as compatible to VLC):
 xdg-mime default vlc.desktop application/ogg
 xdg-mime default vlc.desktop application/x-shorten
 xdg-mime default vlc.desktop application/xspf+xml

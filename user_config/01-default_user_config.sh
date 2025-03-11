@@ -1,5 +1,13 @@
 # Output can be too large for the konsole windows, copy STDERR and STDOUT into a textfile by using this command:
-# sudo bash ./01-default_user_config.sh |& tee "$HOME/01-default_user_config.log"
+# bash ./01-default_user_config.sh |& tee "$HOME/01-default_user_config.log"
+
+if [ "$(id -u)" -eq 0 ]; then
+    echo "This script is not supposed to be run as root but as a normal user"
+    exit 1
+fi
+
+echo "Starting default user configuration"
+echo
 
 #Hier muss das Theme noch ins User Dir für Plasma/Lookandfeel verschoben werden
 plasma-apply-lookandfeel -a silverlps.breezedarkcustom.desktop --resetLayout
@@ -24,6 +32,8 @@ kwriteconfig5 --file plasma-nm --group General --key "ManageVirtualConnections" 
 
 busctl call org.freedesktop.Accounts /org/freedesktop/Accounts/User$(id -u) org.freedesktop.Accounts.User SetIconFile s "./ressources/face.png"
 
+kwriteconfig5 --file dolphinrc --group General --key "RememberOpenedTabs" --type bool false
+
 #copy das Energieprofil aus den Ressources in das configdir (überschreiben!!)
 cp ./configs/powermanagementprofilesrc "$HOME/.config/powermanagementprofilesrc"
 
@@ -33,11 +43,12 @@ busctl call com.ubuntu.WhoopsiePreferences /com/ubuntu/WhoopsiePreferences com.u
 busctl call com.ubuntu.WhoopsiePreferences /com/ubuntu/WhoopsiePreferences com.ubuntu.WhoopsiePreferences SetReportMetrics b false
 #Kann geprüft werden mit cat /etc/whoopsie (dort ist nur die Metrics Option) und systemctl status whoopsie.path (muss auf disabled stehen)
 
-#Das deaktiviert tatsächlich KWallet, allerdings führt das zu anderen Problemen, Anwendungen wie Vivaldi speichern dann nicht mehr richtig, ggf. ist abschalten doch nicht die beste Option... Vlt. lohnt es sich das Passwort leer zu machen, was effektiv wohl die Passwortabfragen deakiviert, auch bei Autologin. Ist natürlich unsicher, allerdings ist Leerzeichen als Userpassword dann auch das Passwort des Wallets und das ist auch nicht besser, nur nerviger bei Autologin. Vlt. gibt es eine Lösung die das Wallet Passwort bei Autologin immer mitentsperrt. Sonst lohnt es sich wohlmöglich gar nicht. Sonst sollte wohlmöglich Autologin einfach nicht verwendet werden, die Einstellungen warnen eh den Nutzer davor, dass es zu Problemen mit KWallet führt, oder eine Art Autounlock wie hier https://www.reddit.com/r/kde/comments/ybp191/how_to_auto_unlock_kwallet/?tl=de oder ich könnte austesten, immer eine Nachfrage auf den Zugriff zu machen, und den vlt. pro Programm immer zu erlauben, falls das geht siehe hier grünes Feld: https://wiki.archlinux.org/title/KDE_Wallet
-#kwriteconfig5 --file kwalletrc --group Wallet --key "Enabled" --type bool false
-#kwriteconfig5 --file kwalletrc --group org.freedesktop.secrets --key "apiEnabled" --type bool false
-#busctl --user call org.kde.kwalletd5 /modules/kwalletd5 org.kde.KWallet reconfigure
+flatpak install --noninteractive flathub com.github.tchx84.Flatseal
+flatpak install --noninteractive flathub org.localsend.localsend_app
+flatpak install --noninteractive flathub org.rncbc.qpwgraph
 
+mkdir "$HOME/Apps"
+kwriteconfig5 --file "$HOME/Apps/.directory" --group 'Desktop Entry' --key 'Icon' 'folder-appimage'
 
 #MIME type associations
 #Sollte NACH der Installation von Software erledigt werden, um es zu vermeiden, dass neue Installationen die Defaults wieder überschreiben
@@ -125,3 +136,8 @@ xdg-mime default vlc.desktop audio/x-wavpack
 xdg-mime default vlc.desktop audio/x-xm
 xdg-mime default vlc.desktop x-content/audio-cdda
 xdg-mime default vlc.desktop x-content/audio-player
+
+#Das deaktiviert tatsächlich KWallet, allerdings führt das zu anderen Problemen, Anwendungen wie Vivaldi speichern dann nicht mehr richtig, ggf. ist abschalten doch nicht die beste Option... Vlt. lohnt es sich das Passwort leer zu machen, was effektiv wohl die Passwortabfragen deakiviert, auch bei Autologin. Ist natürlich unsicher, allerdings ist Leerzeichen als Userpassword dann auch das Passwort des Wallets und das ist auch nicht besser, nur nerviger bei Autologin. Vlt. gibt es eine Lösung die das Wallet Passwort bei Autologin immer mitentsperrt. Sonst lohnt es sich wohlmöglich gar nicht. Sonst sollte wohlmöglich Autologin einfach nicht verwendet werden, die Einstellungen warnen eh den Nutzer davor, dass es zu Problemen mit KWallet führt, oder eine Art Autounlock wie hier https://www.reddit.com/r/kde/comments/ybp191/how_to_auto_unlock_kwallet/?tl=de oder ich könnte austesten, immer eine Nachfrage auf den Zugriff zu machen, und den vlt. pro Programm immer zu erlauben, falls das geht siehe hier grünes Feld: https://wiki.archlinux.org/title/KDE_Wallet
+#kwriteconfig5 --file kwalletrc --group Wallet --key "Enabled" --type bool false
+#kwriteconfig5 --file kwalletrc --group org.freedesktop.secrets --key "apiEnabled" --type bool false
+#busctl --user call org.kde.kwalletd5 /modules/kwalletd5 org.kde.KWallet reconfigure

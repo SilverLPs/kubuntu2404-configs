@@ -1,5 +1,5 @@
 # Output can be too large for the konsole windows, copy STDERR and STDOUT into a textfile by using this command:
-# bash ./01-default_user_config.sh |& tee "$HOME/01-default_user_config.log"
+# bash ./01-default_user_config.sh |& tee -a "$HOME/01-default_user_config.log"
 
 if [ "$(id -u)" -eq 0 ]; then
     echo "This script is not supposed to be run as root but as a normal user"
@@ -51,6 +51,12 @@ kwriteconfig5 --file kcminputrc --group 'Keyboard' --key 'NumLock' '0'
 
 # Enabling visibility for virtual networks in the network configuration section in the system settings app
 kwriteconfig5 --file plasma-nm --group 'General' --key 'ManageVirtualConnections' --type bool true
+
+# Enable offline updates (updates after reboot)
+# Kubuntu 26.04 will most likely implement dracut, which will fix the following 2 issues:
+# 1. Due to the initramfs not being localised the plymouth display for "Installing updates" is shown only in English even on non English-systems: https://bugs.launchpad.net/ubuntu/+source/plymouth/+bug/2088413
+# 2. Installing updates at reboot with offline-updates will require the user to enter the LUKS passwort manually, and as the system will be fully restarted after an update, the user will have to enter it 2 times. Dracut will make it possible to use automatic disk decryption by using the TPM chip with systemd's disk encryption module
+kwriteconfig5 --file discoverrc --group 'Software' --key 'UseOfflineUpdates' --type bool true
 
 # Implements a basic stock profile picture for the user account to overwrite the Kubuntu icon profile picture
 busctl call org.freedesktop.Accounts /org/freedesktop/Accounts/User$(id -u) org.freedesktop.Accounts.User SetIconFile s "./ressources/face.png"

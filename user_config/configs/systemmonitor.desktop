@@ -1,0 +1,21 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Categories=Qt;KDE;System;
+Comment=Replaces KSysGuard
+Comment[de]=Ersetzt KSysGuard
+Exec=systemmonitor
+GenericName=Monitor and manage processes
+GenericName[de]=Prozesse überwachen und verwalten
+Icon=utilities-system-monitor
+Keywords=task;manager;process;
+Keywords[de]=prozess;
+Name=System Activity
+Name[de]=Systemaktivität
+NoDisplay=false
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+X-KDE-SubstituteUID=false
+X-KDE-Username=

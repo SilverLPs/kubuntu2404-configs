@@ -1,4 +1,4 @@
-loadTemplate("org.kde.plasma.desktop.defaultPanel")
+loadTemplate("silverlps.desktop.defaultPanel")
 
 var desktopsArray = desktopsForActivity(currentActivity());
 for( var j = 0; j < desktopsArray.length; j++) {

@@ -1,2 +1,12 @@
-- KDE Configs have to be GPL as I used them as template
-- Rest can be MIT
+- Read comments in all scripts, some of them contain todos
+- SilverLPs plasma theme should have dark, darklight and light themes
+- Arguments for theme and for autologin with KDE Wallet password empty
+- Add KDE monochrome starter icon to system icons and then make it the default for kickoff (start menu) in my defaultPanel
+- Plasma/KWin/kactivitymanagerd session and applications should be ended before applying configurations, as otherwise they could be overwritten when the instances get closed.
+- Recommended security levels:
+    0: No security - No LUKS Encryption, Space as Password, Autologin/Empty KDE Wallet Password - Only for test systems
+    1: Low security - No LUKS Encryption, Regular secure password, Autologin/Empty KDE Wallet Password - Recommended for computer noobs who couldn't operate a system otherwise (those kind of people who would refuse to Linux and do unsecure practices on Windows anyways...)
+    2: Medium security - No LUKS Encryption, Regular secure password, Manual Login - Recommended for stationary devices with uncritical data or with low risk of physical manipulation/theft
+    3: High security - LUKS Encryption, Regular secure password, Autologin/Empty KDE Wallet Password - Recommended for all devices that could be stolen and where the data should be protected from regular access after poweroff or extraction via external systems
+    4: Paranoia - LUKS Encryption, Regular secure password, Manual Login - Like high security but also the KDE Wallet will be more protected at runtime at the cost of having to enter the password multiple times.
+- KDE Configs have to be GPL as I used them as template, so add GPLv3 License for whole repository

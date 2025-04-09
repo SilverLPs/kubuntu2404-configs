@@ -9,7 +9,9 @@ fi
 echo "Starting default user configuration"
 echo
 
-#Hier muss das Theme noch ins User Dir für Plasma/Lookandfeel verschoben werden
+# Install and enables custom plasma theme that contains various settings
+mkdir -p "$HOME/.local/share/plasma/look-and-feel"
+cp -R ./configs/silverlps.breezedarkcustom.desktop "$HOME/.local/share/plasma/look-and-feel/"
 plasma-apply-lookandfeel -a silverlps.breezedarkcustom.desktop --resetLayout
 
 # kwriteconfig5 is fully idempotent and automatically creates config files and even folders if necessary, which makes mkdir or touch commands obsolete
@@ -27,6 +29,9 @@ kwriteconfig5 --file kwinrc --group 'Plugins' --key 'kwin4_effect_morphingpopups
 
 # Disable trigger of activating the window overview by putting the mouse in the top left corner of the screen (is triggered to easily and can interfere in daily operation when using maximized applications)
 kwriteconfig5 --file kwinrc --group 'Effect-windowview' --key 'BorderActivateAll' '9'
+
+# Change task switcher to thumbnail grid
+kwriteconfig5 --file kwinrc --group 'TabBox' --key 'LayoutName' 'thumbnail_grid'
 
 # Adding shortcut Meta+W to the triggers for the window overview and also removing the original Meta+W shortcut from the triggers for the activity switcher to avoid a duplicate shortcut trigger
 # WARNING Part of these values in kglobalshortcutsrc are in German, which could lead to problems when the systems/users language is different, it looks like most of them start in English even on a German system, and then the System settings app will change them on the fly to english as the user goes through the options, which would mean, that I could just set it to the english value with this script and on a different language system KDE will set it to the local language automatically without any problems
@@ -72,6 +77,13 @@ cp ./configs/powermanagementprofilesrc "$HOME/.config/powermanagementprofilesrc"
 
 # Create an Apps folder in users home dir (for AppImages and self contained installs, like /opt but on user level)
 kwriteconfig5 --file "$HOME/Apps/.directory" --group 'Desktop Entry' --key 'Icon' 'folder-appimage'
+
+# Create a start menu shortcut for systemmonitor (System Activity)
+mkdir -p "$HOME/.local/share/applications"
+cp ./configs/systemmonitor.desktop "$HOME/.local/share/applications/systemmonitor.desktop"
+
+# Disable clipboard history that remains after closed sessions
+kwriteconfig5 --file klipperrc --group 'General' --key 'KeepClipboardContents' --type bool false
 
 #WICHTIG: Das hier sollte eigentlich in das erste Systemskript verschoben werden, sofern es mit sudo richtig arbeitet...
 busctl call com.ubuntu.WhoopsiePreferences /com/ubuntu/WhoopsiePreferences com.ubuntu.WhoopsiePreferences SetReportCrashes b false

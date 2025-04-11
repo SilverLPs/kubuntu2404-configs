@@ -68,7 +68,7 @@ kwriteconfig5 --file plasma-nm --group 'General' --key 'ManageVirtualConnections
 kwriteconfig5 --file discoverrc --group 'Software' --key 'UseOfflineUpdates' --type bool true
 
 # Implements a basic stock profile picture for the user account to overwrite the Kubuntu icon profile picture
-busctl call org.freedesktop.Accounts /org/freedesktop/Accounts/User$(id -u) org.freedesktop.Accounts.User SetIconFile s "./ressources/face.png"
+busctl call org.freedesktop.Accounts /org/freedesktop/Accounts/User$(id -u) org.freedesktop.Accounts.User SetIconFile s "./resources/face.png"
 
 # Configures Dolphin to always start with a fresh session in users home dir
 kwriteconfig5 --file dolphinrc --group 'General' --key 'RememberOpenedTabs' --type bool false
@@ -85,10 +85,6 @@ kwriteconfig5 --file "$HOME/Apps/.directory" --group 'Desktop Entry' --key 'Icon
 # Create a start menu shortcut for systemmonitor (System Activity)
 mkdir -p "$HOME/.local/share/applications"
 cp ./configs/systemmonitor.desktop "$HOME/.local/share/applications/systemmonitor.desktop"
-
-# Delete Firefox start menu entry
-# WARNING: Make sure that the database doesn't lock itself after editing with sqlite3, otherwise the kickoff start menu won't be able to save new Favourites anymore!
-sqlite3 "$HOME/.local/share/kactivitymanagerd/resources/database" "DELETE FROM ResourceLink WHERE targettedResource='applications:firefox_firefox.desktop';"
 
 # Disable clipboard history that remains after closed sessions
 kwriteconfig5 --file klipperrc --group 'General' --key 'KeepClipboardContents' --type bool false
@@ -197,6 +193,11 @@ xdg-mime default vlc.desktop audio/x-wavpack
 xdg-mime default vlc.desktop audio/x-xm
 xdg-mime default vlc.desktop x-content/audio-cdda
 xdg-mime default vlc.desktop x-content/audio-player
+
+# Make Chromium the default browser (I can already feel the salt of the Anti-Chrome folks :D)
+xdg-mime default chromium_chromium.desktop x-scheme-handler/http
+xdg-mime default chromium_chromium.desktop x-scheme-handler/https
+xdg-settings set default-web-browser chromium_chromium.desktop
 
 # KWallet shouldn't be disabled because that can lead to severe problems with various applications (i.e. Vivaldi). If autologin is activated, the password of KWallet can be changed to just an empty string, this will disable the password prompts and KWallet will still work (but without any encryption, meaning the passwords are clear and unprotected on disk!).
 # If disabling KWallet is still desired, the following commands can be used to achieve that goal on the users own risk!

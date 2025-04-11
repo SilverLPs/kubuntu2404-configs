@@ -39,7 +39,7 @@ echo
 #Install useful default software from official package manager repository
 apt-get update
 echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
-apt-get install -q -y curl net-tools iftop btop htop neofetch kubuntu-restricted-extras gstreamer1.0-vaapi libvdpau-va-gl1 fonts-crosextra-carlito fonts-crosextra-caladea exfatprogs synaptic chromium-browser chromium-browser-l10n chromium-codecs-ffmpeg-extra openjdk-17-jre vlc vlc-plugin-fluidsynth vlc-plugin-jack vlc-plugin-pipewire vlc-plugin-svg nfs-common flatpak kde-config-flatpak plasma-discover-backend-flatpak pipewire-jack pipewire-alsa latencytop kolourpaint cpu-x mediainfo mediainfo-gui
+apt-get install -q -y curl net-tools iftop btop htop neofetch kubuntu-restricted-extras gstreamer1.0-vaapi libvdpau-va-gl1 fonts-crosextra-carlito fonts-crosextra-caladea exfatprogs synaptic chromium-browser chromium-browser-l10n chromium-codecs-ffmpeg-extra openjdk-17-jre vlc vlc-plugin-fluidsynth vlc-plugin-jack vlc-plugin-pipewire vlc-plugin-svg nfs-common flatpak kde-config-flatpak plasma-discover-backend-flatpak pipewire-jack pipewire-alsa latencytop kolourpaint cpu-x mediainfo mediainfo-gui sqlite3
 
 #Add Flathub to flatpak sources
 flatpak -v remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo

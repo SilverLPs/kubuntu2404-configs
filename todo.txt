@@ -3,6 +3,7 @@
 - Arguments for theme and for autologin with KDE Wallet password empty
 - Add KDE monochrome starter icon to system icons and then make it the default for kickoff (start menu) in my defaultPanel
 - Plasma/KWin/kactivitymanagerd session and applications should be ended before applying configurations, as otherwise they could be overwritten when the instances get closed.
+- Search for configurations that can be replaced by DBus Calls (more resiliant as running processes won't overwrite the manual changes in config files from their runtime state in memory)
 - Recommended security levels:
     0: No security - No LUKS Encryption, Space as Password, Autologin/Empty KDE Wallet Password - Only for test systems
     1: Low security - No LUKS Encryption, Regular secure password, Autologin/Empty KDE Wallet Password - Recommended for computer noobs who couldn't operate a system otherwise (those kind of people who would refuse to Linux and do unsecure practices on Windows anyways...)

@@ -10,9 +10,13 @@ echo "Starting default user configuration"
 echo
 
 # Install and enables custom plasma theme that contains various settings
+# Plasma must run to apply the look and feel
 mkdir -p "$HOME/.local/share/plasma/look-and-feel"
 cp -R ./configs/silverlps.breezedarkcustom.desktop "$HOME/.local/share/plasma/look-and-feel/"
 plasma-apply-lookandfeel -a silverlps.breezedarkcustom.desktop --resetLayout
+
+# End KDE/Plasma related processes
+#kquitapp5 plasmashell
 
 # kwriteconfig5 is fully idempotent and automatically creates config files and even folders if necessary, which makes mkdir or touch commands obsolete
 
@@ -81,6 +85,10 @@ kwriteconfig5 --file "$HOME/Apps/.directory" --group 'Desktop Entry' --key 'Icon
 # Create a start menu shortcut for systemmonitor (System Activity)
 mkdir -p "$HOME/.local/share/applications"
 cp ./configs/systemmonitor.desktop "$HOME/.local/share/applications/systemmonitor.desktop"
+
+# Delete Firefox start menu entry
+# WARNING: Make sure that the database doesn't lock itself after editing with sqlite3, otherwise the kickoff start menu won't be able to save new Favourites anymore!
+sqlite3 "$HOME/.local/share/kactivitymanagerd/resources/database" "DELETE FROM ResourceLink WHERE targettedResource='applications:firefox_firefox.desktop';"
 
 # Disable clipboard history that remains after closed sessions
 kwriteconfig5 --file klipperrc --group 'General' --key 'KeepClipboardContents' --type bool false

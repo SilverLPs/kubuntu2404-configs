@@ -1,8 +1,21 @@
 # Output can be too large for the konsole windows, copy STDERR and STDOUT into a textfile by using this command:
-# bash ./01-default_user_config.sh |& tee -a "$HOME/01-default_user_config.log"
+# bash ./01-default_user_config.sh |& tee -a "$HOME/.01-default_user_config.log"
 
+# Check if user script is run as non-root user and exit if not
 if [ "$(id -u)" -eq 0 ]; then
     echo "This script is not supposed to be run as root but as a normal user"
+    exit 1
+fi
+
+# Check if the current directory is the same as the scripts location, otherwise relative paths in the script would not work
+SCRIPTDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPTDIR" || {
+    echo "Could not change current directory to scripts location. Please run the script from its actual location!"
+    exit 1
+}
+echo "Changed current directory to scripts location: $(pwd)"
+if [[ "$(pwd)" != "$SCRIPTDIR" ]]; then
+    echo "Could not change current directory to scripts location. Please run the script from its actual location!"
     exit 1
 fi
 
@@ -15,8 +28,14 @@ mkdir -p "$HOME/.local/share/plasma/look-and-feel"
 cp -R ./configs/silverlps.breezedarkcustom.desktop "$HOME/.local/share/plasma/look-and-feel/"
 plasma-apply-lookandfeel -a silverlps.breezedarkcustom.desktop --resetLayout
 
+# Install basic system tools flatpaks
+flatpak install --noninteractive flathub com.github.tchx84.Flatseal
+flatpak install --noninteractive flathub org.localsend.localsend_app
+flatpak install --noninteractive flathub org.rncbc.qpwgraph
+
 # End KDE/Plasma related processes
 #kquitapp5 plasmashell
+# More like kwin or kactivitymanagerd and so on could be exited but for now that seems unnecessary
 
 # kwriteconfig5 is fully idempotent and automatically creates config files and even folders if necessary, which makes mkdir or touch commands obsolete
 
@@ -38,12 +57,11 @@ kwriteconfig5 --file kwinrc --group 'Effect-windowview' --key 'BorderActivateAll
 kwriteconfig5 --file kwinrc --group 'TabBox' --key 'LayoutName' 'thumbnail_grid'
 
 # Adding shortcut Meta+W to the triggers for the window overview and also removing the original Meta+W shortcut from the triggers for the activity switcher to avoid a duplicate shortcut trigger
-# WARNING Part of these values in kglobalshortcutsrc are in German, which could lead to problems when the systems/users language is different, it looks like most of them start in English even on a German system, and then the System settings app will change them on the fly to english as the user goes through the options, which would mean, that I could just set it to the english value with this script and on a different language system KDE will set it to the local language automatically without any problems
-kwriteconfig5 --file kglobalshortcutsrc --group 'kwin' --key 'Overview' 'Meta+W\tMeta+Tab,Meta+W,Übersicht umschalten'
-#Geändert auf einfache Anführungszeichen, prüfen ob \t nach sed korrekt entfernt und alles richtig ist!
+kwriteconfig5 --file kglobalshortcutsrc --group 'kwin' --key 'Overview' 'Meta+W\tMeta+Tab,Meta+W,Toggle Overview'
 # kwriteconfig5 has a bug that makes it impossible to correctly process the \t, it will always make \\t out of it. The sed command is necessary to fix that.
 sed -i '/Overview/s/\\\\t/\\t/g' "$HOME/.config/kglobalshortcutsrc"
-kwriteconfig5 --file kglobalshortcutsrc --group 'plasmashell' --key 'next activity' 'none,Meta+Tab,Zwischen Aktivitäten wechseln'
+kwriteconfig5 --file kglobalshortcutsrc --group 'plasmashell' --key 'next activity' 'none,none,Walk through activities'
+kwriteconfig5 --file kglobalshortcutsrc --group 'plasmashell' --key 'previous activity' 'none,none,Walk through activities (Reverse)'
 
 # Configuring timeout to 90 minutes for activating the lock screen (conservative value in my opinion)
 kwriteconfig5 --file kscreenlockerrc --group 'Daemon' --key 'Timeout' '90'
@@ -68,7 +86,7 @@ kwriteconfig5 --file plasma-nm --group 'General' --key 'ManageVirtualConnections
 kwriteconfig5 --file discoverrc --group 'Software' --key 'UseOfflineUpdates' --type bool true
 
 # Implements a basic stock profile picture for the user account to overwrite the Kubuntu icon profile picture
-busctl call org.freedesktop.Accounts /org/freedesktop/Accounts/User$(id -u) org.freedesktop.Accounts.User SetIconFile s "./resources/face.png"
+busctl call org.freedesktop.Accounts /org/freedesktop/Accounts/User$(id -u) org.freedesktop.Accounts.User SetIconFile s "$(realpath "./resources/face.png")"
 
 # Configures Dolphin to always start with a fresh session in users home dir
 kwriteconfig5 --file dolphinrc --group 'General' --key 'RememberOpenedTabs' --type bool false
@@ -86,25 +104,19 @@ kwriteconfig5 --file "$HOME/Apps/.directory" --group 'Desktop Entry' --key 'Icon
 mkdir -p "$HOME/.local/share/applications"
 cp ./configs/systemmonitor.desktop "$HOME/.local/share/applications/systemmonitor.desktop"
 
-# Disable clipboard history that remains after closed sessions
+# Disable clipboard history remaining after closed sessions
 kwriteconfig5 --file klipperrc --group 'General' --key 'KeepClipboardContents' --type bool false
-
-#WICHTIG: Das hier sollte eigentlich in das erste Systemskript verschoben werden, sofern es mit sudo richtig arbeitet...
-busctl call com.ubuntu.WhoopsiePreferences /com/ubuntu/WhoopsiePreferences com.ubuntu.WhoopsiePreferences SetReportCrashes b false
-busctl call com.ubuntu.WhoopsiePreferences /com/ubuntu/WhoopsiePreferences com.ubuntu.WhoopsiePreferences SetAutomaticallyReportCrashes b false
-busctl call com.ubuntu.WhoopsiePreferences /com/ubuntu/WhoopsiePreferences com.ubuntu.WhoopsiePreferences SetReportMetrics b false
-#Kann geprüft werden mit cat /etc/whoopsie (dort ist nur die Metrics Option) und systemctl status whoopsie.path (muss auf disabled stehen)
-
-# Install basic system tools flatpaks
-flatpak install --noninteractive flathub com.github.tchx84.Flatseal
-flatpak install --noninteractive flathub org.localsend.localsend_app
-flatpak install --noninteractive flathub org.rncbc.qpwgraph
 
 # Configure qpwgraph to not use the system tray at all (and therefore quit the process if the window is closed)
 # kwriteconfig5 really doesn't like many of the characters used in the qpwgraph config file. So this shouldn't be used on an existing config!
 echo "The following mv command is just a safety mechanism to prevent kwriteconfig5 from editing an existing file with incompatible characters. If it errors it probably means there is no config file for qpwgraph yet, which is absolutely fine"
 mv "$HOME/.var/app/org.rncbc.qpwgraph/config/rncbc.org/qpwgraph.conf" "$HOME/.var/app/org.rncbc.qpwgraph/config/rncbc.org/qpwgraph.conf.bak"-"$(date +\%Y\%m\%d)-$(date +\%H\%M\%S)"
 kwriteconfig5 --file "$HOME/.var/app/org.rncbc.qpwgraph/config/rncbc.org/qpwgraph.conf" --group 'SystemTray' --key 'Enabled' --type bool false
+
+# Disable fcitx Keyboard Layout system tray icon (most users won't need this)
+# The KCM systemsettings module uses dynamic IDs in the configuration file, therefore editing it automatically with kwriteconfig5 can't be reliable and the whole config file needs to be copied.
+#kwriteconfig5 --file "$HOME.config/fcitx5/config" --group 'Behavior/DisabledAddons' --key '0' 'classicui'
+cp ./configs/fcitx5_config "$HOME/.config/fcitx5/config"
 
 # MIME type associations for default applications that open specified filetypes
 # This should be run after software installations to make sure new software installs don't overwrite the MIME type associations again.
@@ -204,3 +216,6 @@ xdg-settings set default-web-browser chromium_chromium.desktop
 #kwriteconfig5 --file kwalletrc --group Wallet --key "Enabled" --type bool false
 #kwriteconfig5 --file kwalletrc --group org.freedesktop.secrets --key "apiEnabled" --type bool false
 #busctl --user call org.kde.kwalletd5 /modules/kwalletd5 org.kde.KWallet reconfigure
+
+echo
+echo "Reboot to apply all settings"

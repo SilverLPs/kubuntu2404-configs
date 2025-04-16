@@ -211,6 +211,24 @@ xdg-mime default chromium_chromium.desktop x-scheme-handler/http
 xdg-mime default chromium_chromium.desktop x-scheme-handler/https
 xdg-settings set default-web-browser chromium_chromium.desktop
 
+# Configure chromium to use GTK-theme of KDE Plasma and to merge the tab bar into the window bar
+while ps -eo pid,comm,exe | grep chromium | grep '/snap/chromium/' > /dev/null; do
+  echo "Running chromium processes have been detected. Please close all chromium processes so the script can proceed!"
+  sleep 5
+done
+script_chromecurrentprofile="Default"
+if [[ -f "$HOME/snap/chromium/common/chromium/Local State" ]]; then
+  profile=$(jq -r '.profile.last_used // empty' "$HOME/snap/chromium/common/chromium/Local State")
+  script_chromecurrentprofile="${profile:-Default}"
+fi
+mkdir -p "$HOME/snap/chromium/common/chromium/$script_chromecurrentprofile"
+if [ ! -s "$HOME/snap/chromium/common/chromium/$script_chromecurrentprofile/Preferences" ]; then
+  jq -n '.extensions.theme.system_theme = 1 | .browser.custom_chrome_frame = true' > "$HOME/snap/chromium/common/chromium/$script_chromecurrentprofile/Preferences"
+else
+  jq '.extensions.theme.system_theme = 1 | .browser.custom_chrome_frame = true' "$HOME/snap/chromium/common/chromium/$script_chromecurrentprofile/Preferences" > "/tmp/Chromium_Preferences.tmp" && mv "/tmp/Chromium_Preferences.tmp" "$HOME/snap/chromium/common/chromium/$script_chromecurrentprofile/Preferences"
+fi
+unset script_chromecurrentprofile
+
 # KWallet shouldn't be disabled because that can lead to severe problems with various applications (i.e. Vivaldi). If autologin is activated, the password of KWallet can be changed to just an empty string, this will disable the password prompts and KWallet will still work (but without any encryption, meaning the passwords are clear and unprotected on disk!).
 # If disabling KWallet is still desired, the following commands can be used to achieve that goal on the users own risk!
 #kwriteconfig5 --file kwalletrc --group Wallet --key "Enabled" --type bool false

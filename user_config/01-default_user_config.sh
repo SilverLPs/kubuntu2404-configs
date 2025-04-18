@@ -21,6 +21,8 @@ echo
 
 # Install and enables custom plasma theme that contains various settings
 # Plasma must run to apply the look and feel
+mkdir -p "$HOME/.local/share/icons/hicolor/16x16/apps"
+cp ./resources/silverlps-kickoff.svg "$HOME/.local/share/icons/hicolor/16x16/apps/"
 mkdir -p "$HOME/.local/share/plasma/look-and-feel"
 cp -R ./configs/silverlps.breezedarkcustom.desktop "$HOME/.local/share/plasma/look-and-feel/"
 plasma-apply-lookandfeel -a silverlps.breezedarkcustom.desktop --resetLayout

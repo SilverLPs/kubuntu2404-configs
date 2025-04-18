@@ -1,21 +1,18 @@
-# Output can be too large for the konsole windows, copy STDERR and STDOUT into a textfile by using this command:
-# bash ./01-default_user_config.sh |& tee -a "$HOME/.01-default_user_config.log"
-
 # Check if user script is run as non-root user and exit if not
 if [ "$(id -u)" -eq 0 ]; then
-    echo "This script is not supposed to be run as root but as a normal user"
+    echo "ERROR: This script is not supposed to be run as root but as a normal user"
     exit 1
 fi
 
 # Check if the current directory is the same as the scripts location, otherwise relative paths in the script would not work
 SCRIPTDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPTDIR" || {
-    echo "Could not change current directory to scripts location. Please run the script from its actual location!"
+    echo "ERROR: Could not change current directory to scripts location. Please run the script from its actual location!"
     exit 1
 }
 echo "Changed current directory to scripts location: $(pwd)"
 if [[ "$(pwd)" != "$SCRIPTDIR" ]]; then
-    echo "Could not change current directory to scripts location. Please run the script from its actual location!"
+    echo "ERROR: Could not change current directory to scripts location. Please run the script from its actual location!"
     exit 1
 fi
 

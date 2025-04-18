@@ -2,11 +2,12 @@
     "KPlugin": {
         "Authors": [
             {
-                "Name": "SilverLPs"
+                "Name": "SilverLPs",
+                "Name": "KDE Visual Design Group"
             }
         ],
         "Category": "",
-        "Description": "Breeze Dark Custom by SilverLPs",
+        "Description": "Breeze Dark Custom modified by SilverLPs",
         "Id": "silverlps.breezedarkcustom.desktop",
         "License": "GPLv2+",
         "Name": "SilverLPs Breeze Dark Custom",

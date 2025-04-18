@@ -22,8 +22,8 @@ if (panel.formFactor === "horizontal") {
 }
 
 var kickoff = panel.addWidget("org.kde.plasma.kickoff")
-kickoff.currentConfigGroup = ["General"]
-kickoff.writeConfig("icon", "kde")
+//kickoff.currentConfigGroup = ["General"]
+//kickoff.writeConfig("icon", "kde")
 kickoff.currentConfigGroup = ["Shortcuts"]
 kickoff.writeConfig("global", "Alt+F1")
 

@@ -10,6 +10,7 @@ This is just a personal project I worked on for my own needs. It’s definitely 
 
 ```bash
 git clone https://github.com/SilverLPs/kubuntu2404-configs.git
+cd ./kubuntu2404-configs
 ./run.sh --system --user |& tee -a "$HOME/.local/share/kubuntu2404-configs-$(date +\%Y\%m\%d)-$(date +\%H\%M\%S).log"
 ```
 

@@ -42,8 +42,8 @@ done
 # System configuration (scripts that will run with sudo)
 # These commands are passed and run as a single block in a single sudo command to avoid multiple password prompts
 sudo_commands=""
-[[ ${valid_args["--system"]} -eq 1 ]] && sudo_commands+="bash ./system/01-default_system_config.sh"$'\n'
-[[ ${valid_args["--realtime"]} -eq 1 ]] && sudo_commands+="bash ./system/02-default_system_config_user_realtime_permissions.sh"$'\n'
+[[ ${valid_args["--system"]} -eq 1 ]] && sudo_commands+="bash ./system_config/01-default_system_config.sh"$'\n'
+[[ ${valid_args["--realtime"]} -eq 1 ]] && sudo_commands+="bash ./system_config/02-default_system_config_user_realtime_permissions.sh"$'\n'
 
 if [[ -n "$sudo_commands" ]]; then
   sudo -s <<HERE

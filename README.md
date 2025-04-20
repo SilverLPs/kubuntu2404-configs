@@ -9,9 +9,9 @@ This is just a personal project I worked on for my own needs. It’s definitely 
 > The output may exceed the visible area in Konsole, so it will be saved (STDERR + STDOUT) to a log file in `~/.local/share`.
 
 ```bash
+cd /.local/share
 git clone https://github.com/SilverLPs/kubuntu2404-configs.git
-cd ./kubuntu2404-configs
-./run.sh --system --user |& tee -a "$HOME/.local/share/kubuntu2404-configs-$(date +\%Y\%m\%d)-$(date +\%H\%M\%S).log"
+./kubuntu2404-configs/run.sh --system --user |& tee -a "$HOME/.local/share/kubuntu2404-configs-$(date +\%Y\%m\%d)-$(date +\%H\%M\%S).log"
 ```
 
 ### Arguments:
@@ -43,7 +43,7 @@ Parameter | Description
         - LUKS disk encryption is optional but requires password entry on every boot and update. See Security Levels Concept below.
             - Note: TPM-based encryption (like BitLocker) is not supported yet.
     - Create a username, device name, and password.
-        - Do not enable auto-login—it interferes with KDE Wallet. See Post-usage for a safer method.
+        - Do not enable auto-login — it interferes with KDE Wallet. See Post-usage for a safer method.
         - If you want a "no password" feel, using a space as password works but is very insecure. Understand the risks (see Security Levels Concept).
         - Use only lowercase letters and numbers for usernames — avoid special characters.
     - Complete installation and restart. Remove USB when prompted or as needed.
@@ -115,22 +115,28 @@ Security level | Description | Notes
     - Improves power usage, interrupt handling, and latency. BIOS/hardware-switch disablement is best.
 
 ### Verify important Configurations
-- Verify realtime kernel mode
+- Verify script
 
 ## Miscellaneous
 
 ### Script Issues
-n/a
+- The qpwgraph configuration (needed to disable the system tray icon running in background all the time) is not idempotent, so it will backup the old config and then overwrite it entirely, could possibly be fixed in the future by using a different INI-parser tool than kwriteconfig5, which has a bug (look at the comments in the script for more information).
+- The fcitx5 configuration (needed to disable the system tray icon of the keyboard layout) is not idempotent, so it will backup the old config and then overwrite it entirely. This could possibly be fixed in the future if there is another way to disable (or even better just hide) the fcitx5 system tray icon (look at the comments in the script for more information).
 
 ### Kubuntu 24.04 Issues
 - KDE-Bug 433569 Color change for Titlebar and window header isn't synchronized when window becomes active or inactive: No reliable fix yet. A workaround might be possible by manually editing color schemes, but this is unstable and may be reset by updates (see bugtracker ticket for details). However, this bug is barely noticable at all.
-- Ubuntu 24.04 distros still don't have reliable access to dracut for generating the initramfs, which introduces the following issues:
-    - The language in the update screen (plymouth) is not localized and always in English
-    - LUKS disk decryption with the TPM module is not available, so the password gets prompted at every boot
+- Ubuntu 24.04 distros still don't have reliable access to dracut for generating the initramfs
+    - This introduces the following issues:
+        - The language in the update screen (plymouth) is not localized and always in English
+        - LUKS disk decryption with the TPM module is not available, so the password gets prompted at every boot
+    - Dracut will be implemented in Ubuntu 25.10 and is going to replace initramfs-tools. This should make it possible to fix both problems in Kubuntu 26.04 LTS.
 
 ### Automation Issues
 - Automating the installation of extensions (like UBlock Origin Lite) from the Chromium Store is almost impossible, unless I would use Policies/"External Extensions" which will both force the installation and will make it impossible to uninstall it via Chromium itself.
 - Automating the addition of "places"-entries for Dolphin/KDE File Picker is difficult as the entrys are saved in a large XBEL (xml-style) file in $HOME/.local/share/user-places.xbel. It could be edited with an XML tool but the entries all have UUID-like IDs, so this can not be replicated without knowing the exact logic behind this file. Also there seem to be no CLI or DBus ways to interact with this file.
+- Automating autologin is almost impossible at the moment, not because of the autologin setting itself (that is just 2 lines in the sddm.conf ini) but because of KDE wallet which will then ask for a password everytime once per login when an app tries to use the wallet. There are 2 solutions to this:
+    - Set KDE wallet password to blank/empty, while insecure (defacto decrypted wallet!) it will avoid the password prompts completely while not affecting the functionality. However, there is no CLI tool or DBus call to automate this, it has to be done manually via GUI.
+    - The professional solution would be to use something like pam_autologin, to use the password even for SDDM autologin and therefore automatically decrypt the Wallet at login. While it seems to be technically possible, it is not supported in Kubuntu 24.04 and there is [almost](https://bbs.archlinux.org/viewtopic.php?id=285783) no documentation on how to implement this. For the sake of stability, this should not be used unless it becomes supported in the future. Side note: A big chunk of the autologin situation could be solved in Kubuntu 26.04 which will most likely be able to use TPM disk decryption thanks to dracut. This will make autologin unnecessary in LUKS setups as the double password prompt will be solved with automatic TPM disk decryption.
 
 ## License and Disclaimer
 

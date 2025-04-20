@@ -1,5 +1,10 @@
-- Read comments in all scripts, some of them contain todos
-- Argument for autologin with KDE Wallet password empty
-O Make KDE monochrome starter icon kickoffs icon
-- Search for configurations that can be replaced by DBus Calls (more resiliant as running processes won't overwrite the manual changes in config files from their runtime state in memory)
+Soon:
+- One complete test run with all arguments, after that check everything manually for missing or wrong configs
 - Checkscript for the most important stuff (especially low latency stuff)
+- Transfer Studio-setup knowledge to README
+- Add --studio argument for installing Studio software and configs
+
+Long term:
+- Search for configurations that can be replaced by DBus Calls (more resiliant as running processes won't overwrite the manual changes in config files from their runtime state in memory)
+- Maybe translate this into a more user friendly Python/GUI version if needed
+- Or AI could turn this into an Ansible playbook

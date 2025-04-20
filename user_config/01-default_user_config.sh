@@ -21,10 +21,10 @@ echo
 
 # Install and enables custom plasma theme that contains various settings
 # Plasma must run to apply the look and feel
-mkdir -p "$HOME/.local/share/icons/hicolor/16x16/apps"
-cp ./resources/silverlps-kickoff.svg "$HOME/.local/share/icons/hicolor/16x16/apps/"
-mkdir -p "$HOME/.local/share/plasma/look-and-feel"
-cp -R ./configs/silverlps.breezedarkcustom.desktop "$HOME/.local/share/plasma/look-and-feel/"
+mkdir -pv "$HOME/.local/share/icons/hicolor/16x16/apps"
+cp -v ./resources/silverlps-kickoff.svg "$HOME/.local/share/icons/hicolor/16x16/apps/"
+mkdir -pv "$HOME/.local/share/plasma/look-and-feel"
+cp -vR ./configs/silverlps.breezedarkcustom.desktop "$HOME/.local/share/plasma/look-and-feel/"
 plasma-apply-lookandfeel -a silverlps.breezedarkcustom.desktop --resetLayout
 
 # Install basic system tools flatpaks
@@ -34,7 +34,7 @@ flatpak install --noninteractive flathub org.rncbc.qpwgraph
 
 # End KDE/Plasma related processes
 #kquitapp5 plasmashell
-# More like kwin or kactivitymanagerd and so on could be exited but for now that seems unnecessary
+# More processes like kwin or kactivitymanagerd and so on could be exited but for now that seems unnecessary
 
 # kwriteconfig5 is fully idempotent and automatically creates config files and even folders if necessary, which makes mkdir or touch commands obsolete
 
@@ -94,14 +94,14 @@ kwriteconfig5 --file dolphinrc --group 'General' --key 'RememberOpenedTabs' --ty
 kwriteconfig5 --file "$HOME/.local/share/plasma-systemmonitor/processes.page" --group 'Face-94051759765872' --group 'org.kde.ksysguard.processtable' --group 'General' --key 'userFilterMode' '3'
 
 # Copy the energy profile from this config to the users config dir (overwrites if necessary)
-cp ./configs/powermanagementprofilesrc "$HOME/.config/powermanagementprofilesrc"
+cp -v ./configs/powermanagementprofilesrc "$HOME/.config/powermanagementprofilesrc"
 
 # Create an Apps folder in users home dir (for AppImages and self contained installs, like /opt but on user level)
 kwriteconfig5 --file "$HOME/Apps/.directory" --group 'Desktop Entry' --key 'Icon' 'folder-appimage'
 
 # Create a start menu shortcut for systemmonitor (System Activity)
-mkdir -p "$HOME/.local/share/applications"
-cp ./configs/systemmonitor.desktop "$HOME/.local/share/applications/systemmonitor.desktop"
+mkdir -pv "$HOME/.local/share/applications"
+cp -v ./configs/systemmonitor.desktop "$HOME/.local/share/applications/systemmonitor.desktop"
 
 # Disable clipboard history remaining after closed sessions
 kwriteconfig5 --file klipperrc --group 'General' --key 'KeepClipboardContents' --type bool false
@@ -109,13 +109,14 @@ kwriteconfig5 --file klipperrc --group 'General' --key 'KeepClipboardContents' -
 # Configure qpwgraph to not use the system tray at all (and therefore quit the process if the window is closed)
 # kwriteconfig5 really doesn't like many of the characters used in the qpwgraph config file. So this shouldn't be used on an existing config!
 echo "The following mv command is just a safety mechanism to prevent kwriteconfig5 from editing an existing file with incompatible characters. If it errors it probably means there is no config file for qpwgraph yet, which is absolutely fine"
-mv "$HOME/.var/app/org.rncbc.qpwgraph/config/rncbc.org/qpwgraph.conf" "$HOME/.var/app/org.rncbc.qpwgraph/config/rncbc.org/qpwgraph.conf.bak"-"$(date +\%Y\%m\%d)-$(date +\%H\%M\%S)"
+mv -v "$HOME/.var/app/org.rncbc.qpwgraph/config/rncbc.org/qpwgraph.conf" "$HOME/.var/app/org.rncbc.qpwgraph/config/rncbc.org/qpwgraph.conf.bak"-"$(date +\%Y\%m\%d)-$(date +\%H\%M\%S)"
 kwriteconfig5 --file "$HOME/.var/app/org.rncbc.qpwgraph/config/rncbc.org/qpwgraph.conf" --group 'SystemTray' --key 'Enabled' --type bool false
 
 # Disable fcitx Keyboard Layout system tray icon (most users won't need this)
 # The KCM systemsettings module uses dynamic IDs in the configuration file, therefore editing it automatically with kwriteconfig5 can't be reliable and the whole config file needs to be copied.
 #kwriteconfig5 --file "$HOME.config/fcitx5/config" --group 'Behavior/DisabledAddons' --key '0' 'classicui'
-cp ./configs/fcitx5_config "$HOME/.config/fcitx5/config"
+mv -v "$HOME/.config/fcitx5/config" "$HOME/.config/fcitx5/config.bak"-"$(date +\%Y\%m\%d)-$(date +\%H\%M\%S)"
+cp -v ./configs/fcitx5_config "$HOME/.config/fcitx5/config"
 
 # MIME type associations for default applications that open specified filetypes
 # This should be run after software installations to make sure new software installs don't overwrite the MIME type associations again.
@@ -211,28 +212,7 @@ xdg-mime default chromium_chromium.desktop x-scheme-handler/https
 xdg-settings set default-web-browser chromium_chromium.desktop
 
 # Configure chromium to use GTK-theme of KDE Plasma and to merge the tab bar into the window bar
-while ps -eo pid,comm,exe | grep chromium | grep '/snap/chromium/' > /dev/null; do
-  echo "Running chromium processes have been detected. Please close all chromium processes so the script can proceed!"
-  sleep 5
-done
-script_chromecurrentprofile="Default"
-if [[ -f "$HOME/snap/chromium/common/chromium/Local State" ]]; then
-  profile=$(jq -r '.profile.last_used // empty' "$HOME/snap/chromium/common/chromium/Local State")
-  script_chromecurrentprofile="${profile:-Default}"
-fi
-mkdir -p "$HOME/snap/chromium/common/chromium/$script_chromecurrentprofile"
-if [ ! -s "$HOME/snap/chromium/common/chromium/$script_chromecurrentprofile/Preferences" ]; then
-  jq -n '.extensions.theme.system_theme = 1 | .browser.custom_chrome_frame = true' > "$HOME/snap/chromium/common/chromium/$script_chromecurrentprofile/Preferences"
-else
-  jq '.extensions.theme.system_theme = 1 | .browser.custom_chrome_frame = true' "$HOME/snap/chromium/common/chromium/$script_chromecurrentprofile/Preferences" > "/tmp/Chromium_Preferences.tmp" && mv "/tmp/Chromium_Preferences.tmp" "$HOME/snap/chromium/common/chromium/$script_chromecurrentprofile/Preferences"
-fi
-unset script_chromecurrentprofile
-
-# KWallet shouldn't be disabled because that can lead to severe problems with various applications (i.e. Vivaldi). If autologin is activated, the password of KWallet can be changed to just an empty string, this will disable the password prompts and KWallet will still work (but without any encryption, meaning the passwords are clear and unprotected on disk!).
-# If disabling KWallet is still desired, the following commands can be used to achieve that goal on the users own risk!
-#kwriteconfig5 --file kwalletrc --group Wallet --key "Enabled" --type bool false
-#kwriteconfig5 --file kwalletrc --group org.freedesktop.secrets --key "apiEnabled" --type bool false
-#busctl --user call org.kde.kwalletd5 /modules/kwalletd5 org.kde.KWallet reconfigure
+bash ./modules/configure_chromium.sh
 
 echo
 echo "Reboot to apply all settings"

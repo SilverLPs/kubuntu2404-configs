@@ -20,3 +20,4 @@ echo "Starting default user configuration (apply light theme with dark core elem
 echo
 
 plasma-apply-desktoptheme breeze-dark
+echo

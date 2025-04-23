@@ -1,8 +1,8 @@
 Soon:
-- One complete test run with all arguments, after that check everything manually for missing or wrong configs
-- Checkscript for the most important stuff (especially low latency stuff)
+- Checkscript for the most important stuff (especially low latency and system stability stuff)
 - Transfer Studio-setup knowledge to README
 - Add --studio argument for installing Studio software and configs
+- Add Installation for some default apps like Vivaldi and Bitwarden
 
 Long term:
 - Search for configurations that can be replaced by DBus Calls (more resiliant as running processes won't overwrite the manual changes in config files from their runtime state in memory)

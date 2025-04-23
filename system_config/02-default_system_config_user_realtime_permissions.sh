@@ -21,3 +21,4 @@ echo
 
 # Add default user to pipewire group to enable enhanced access to system ressources (better for low latency tasks)
 usermod -a -G pipewire "${SUDO_USER}"
+echo

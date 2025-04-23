@@ -26,11 +26,13 @@ cp -v ./resources/silverlps-kickoff.svg "$HOME/.local/share/icons/hicolor/16x16/
 mkdir -pv "$HOME/.local/share/plasma/look-and-feel"
 cp -vR ./configs/silverlps.breezedarkcustom.desktop "$HOME/.local/share/plasma/look-and-feel/"
 plasma-apply-lookandfeel -a silverlps.breezedarkcustom.desktop --resetLayout
+echo
 
 # Install basic system tools flatpaks
 flatpak install --noninteractive flathub com.github.tchx84.Flatseal
 flatpak install --noninteractive flathub org.localsend.localsend_app
 flatpak install --noninteractive flathub org.rncbc.qpwgraph
+echo
 
 # End KDE/Plasma related processes
 #kquitapp5 plasmashell
@@ -95,6 +97,7 @@ kwriteconfig5 --file "$HOME/.local/share/plasma-systemmonitor/processes.page" --
 
 # Copy the energy profile from this config to the users config dir (overwrites if necessary)
 cp -v ./configs/powermanagementprofilesrc "$HOME/.config/powermanagementprofilesrc"
+echo
 
 # Create an Apps folder in users home dir (for AppImages and self contained installs, like /opt but on user level)
 kwriteconfig5 --file "$HOME/Apps/.directory" --group 'Desktop Entry' --key 'Icon' 'folder-appimage'
@@ -102,6 +105,7 @@ kwriteconfig5 --file "$HOME/Apps/.directory" --group 'Desktop Entry' --key 'Icon
 # Create a start menu shortcut for systemmonitor (System Activity)
 mkdir -pv "$HOME/.local/share/applications"
 cp -v ./configs/systemmonitor.desktop "$HOME/.local/share/applications/systemmonitor.desktop"
+echo
 
 # Disable clipboard history remaining after closed sessions
 kwriteconfig5 --file klipperrc --group 'General' --key 'KeepClipboardContents' --type bool false
@@ -111,12 +115,14 @@ kwriteconfig5 --file klipperrc --group 'General' --key 'KeepClipboardContents' -
 echo "The following mv command is just a safety mechanism to prevent kwriteconfig5 from editing an existing file with incompatible characters. If it errors it probably means there is no config file for qpwgraph yet, which is absolutely fine"
 mv -v "$HOME/.var/app/org.rncbc.qpwgraph/config/rncbc.org/qpwgraph.conf" "$HOME/.var/app/org.rncbc.qpwgraph/config/rncbc.org/qpwgraph.conf.bak"-"$(date +\%Y\%m\%d)-$(date +\%H\%M\%S)"
 kwriteconfig5 --file "$HOME/.var/app/org.rncbc.qpwgraph/config/rncbc.org/qpwgraph.conf" --group 'SystemTray' --key 'Enabled' --type bool false
+echo
 
 # Disable fcitx Keyboard Layout system tray icon (most users won't need this)
 # The KCM systemsettings module uses dynamic IDs in the configuration file, therefore editing it automatically with kwriteconfig5 can't be reliable and the whole config file needs to be copied.
 #kwriteconfig5 --file "$HOME.config/fcitx5/config" --group 'Behavior/DisabledAddons' --key '0' 'classicui'
 mv -v "$HOME/.config/fcitx5/config" "$HOME/.config/fcitx5/config.bak"-"$(date +\%Y\%m\%d)-$(date +\%H\%M\%S)"
 cp -v ./configs/fcitx5_config "$HOME/.config/fcitx5/config"
+echo
 
 # MIME type associations for default applications that open specified filetypes
 # This should be run after software installations to make sure new software installs don't overwrite the MIME type associations again.
@@ -205,14 +211,23 @@ xdg-mime default vlc.desktop audio/x-wavpack
 xdg-mime default vlc.desktop audio/x-xm
 xdg-mime default vlc.desktop x-content/audio-cdda
 xdg-mime default vlc.desktop x-content/audio-player
+echo
 
 # Make Chromium the default browser (I can already feel the salt of the Anti-Chrome folks :D)
 xdg-mime default chromium_chromium.desktop x-scheme-handler/http
 xdg-mime default chromium_chromium.desktop x-scheme-handler/https
 xdg-settings set default-web-browser chromium_chromium.desktop
+echo
+
+# Make Thunderbird the default mail application
+xdg-mime default thunderbird_thunderbird.desktop x-scheme-handler/mailto
+xdg-mime default thunderbird_thunderbird.desktop x-scheme-handler/mid
+echo
 
 # Configure chromium to use GTK-theme of KDE Plasma and to merge the tab bar into the window bar
 bash ./modules/configure_chromium.sh
+echo
 
 echo
 echo "Reboot to apply all settings"
+echo

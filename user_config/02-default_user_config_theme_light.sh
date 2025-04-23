@@ -20,3 +20,4 @@ echo "Starting default user configuration (apply light theme)"
 echo
 
 plasma-apply-colorscheme BreezeLight
+echo

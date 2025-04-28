@@ -131,7 +131,7 @@ Security level | Description | Notes
 - **Recommended Kernel Usage:**
     - The default Kubuntu 24.04 LTS kernel with full PREEMPT (not PREEMPT_RT) is highly stable and predictable, although not tuned for absolute minimum latencies under 5ms.
     - **Avoid PREEMPT_RT kernels:** Despite slightly better real-time stability, they drastically reduce overall DSP performance, severely impacting DAW usability, and can cause frequent system freezes or crashes, especially under low memory conditions.
-    - **Liquorix kernel:** While offering impressive real-time stability under load, it may cause unpredictable full system freezes up to multiple seconds**(!)** due to experimental scheduler behavior. Usage is discouraged, especially for less experienced users.
+    - **Liquorix kernel:** While offering impressive real-time stability under load, it may cause unpredictable full system freezes up to multiple seconds (**!**) due to experimental scheduler behavior. Usage is discouraged, especially for less experienced users.
 
 ### Real-Time Capabilities and Limitations
 - **Expected Latency Behavior with Default Kernel (PREEMPT Full Mode):**
@@ -160,7 +160,7 @@ Security level | Description | Notes
     - For PipeWire JACK API:
         - Latency can be set by starting applications like this: `PIPEWIRE_LATENCY="1024/48000" bitwig-studio`
     - For PipeWire ALSA API:
-        - Applications must support PipeWire's virtual ALSA device. Some apps (e.g., DaVinci Resolve) work despite being ALSA-only, others refuse to communicate with non-physical devices, which makes them incompatible with Pipewire.
+        - Applications must support PipeWire's virtual ALSA device. Some apps (e.g., DaVinci Resolve) work despite being ALSA-only, others refuse to communicate with non-physical devices, which makes them incompatible with PipeWires ALSA API.
 - **PipeWire Latency Behavior:**
     - Latency handling in PipeWire works fundamentally differently than in JACK. In JACK, ALSA is reconfigured at the start of the JACK daemon, and the configuration remains static until JACK is stopped. PipeWire, on the other hand, abstracts most of the communication with ALSA even in Pro Audio mode and usually automatically selects the best settings.
         - Applications do not directly configure ALSA when setting up their requested buffer size. Instead, they pass their request to PipeWire, which tries to implement it in ALSA as accurately and stably as possible.

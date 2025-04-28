@@ -117,6 +117,87 @@ Security level | Description | Notes
 ### Verify important Configurations
 - Verify script
 
+## Studio (Audio) Setup Notes
+
+### Kernel Information
+- Kubuntu 24.04 LTS ships with excellent kernel options out of the box:
+    - `CONFIG_PREEMPT_DYNAMIC=y`: Allows dynamic switching between `none`, `voluntary`, and `full` preemption via GRUB parameters without recompiling.
+        - Check current mode: `sudo cat /sys/kernel/debug/sched/preempt`
+    - `CONFIG_NO_HZ_FULL=y`
+    - `CONFIG_HIGH_RES_TIMERS=y`
+    - `CONFIG_LATENCYTOP=y`
+    - `CONFIG_HZ=1000`
+    - [Further details](https://git.launchpad.net/~ubuntu-kernel/ubuntu/+source/linux/+git/noble/commit/?h=master-next&id=2396118b8bc59c35fb50839e8f190922251c3fad)
+- **Recommended Kernel Usage:**
+    - The default Kubuntu 24.04 LTS kernel with full PREEMPT (not PREEMPT_RT) is highly stable and predictable, although not tuned for absolute minimum latencies under 5ms.
+    - **Avoid PREEMPT_RT kernels:** Despite slightly better real-time stability, they drastically reduce overall DSP performance, severely impacting DAW usability, and can cause frequent system freezes or crashes, especially under low memory conditions.
+    - **Liquorix kernel:** While offering impressive real-time stability under load, it may cause unpredictable full system freezes up to multiple seconds**(!)** due to experimental scheduler behavior. Usage is discouraged, especially for less experienced users.
+
+### Real-Time Capabilities and Limitations
+- **Expected Latency Behavior with Default Kernel (PREEMPT Full Mode):**
+    - **512 buffer (10.4ms):** Fully stable and predictable even under moderate background load. Recommended for recordings and live usage with minimal background activity.
+    - **256 buffer (5.2ms):** Generally stable but not recommended for critical recording/live use due to rare xruns under load. Avoid background processes, as these will lead to xruns much quicker than on higher buffers.
+    - **128 buffer (2.6ms):** Very sensitive. Even minimal background load can cause xruns. Only usable for non-critical scenarios without any background load; xruns will probably still occur frequently, even in idle state.
+- **Additional Notes:**
+    - Opening/closing applications (e.g., browsers, Electron apps like Discord) can cause xruns even with high buffers (e.g., 1024 samples).
+    - General/non-pro-audio desktop applications are not optimized for low-latency audio on Linux. They do not auto-adjust CPU priorities, causing minor audio glitches under background load (not always counted as xruns by PipeWire) at lower buffer sizes. This issue should lessen in future years. Until then it is not recommended to set Pipewires default buffer size below 512 if stable non-pro-audio is a requirement.
+        - Important: These glitches are application-side dropouts, not PipeWire or ALSA failures. Windows handles this via background services adjusting priorities dynamically; Linux does not, requiring manual tuning if necessary.
+
+### PipeWire / Audio Stack Best Practices
+- **USB Audio Devices:**
+    - Most USB audio interfaces are class-compliant. Simply plug them in and set them to "Pro Audio" mode in KDE's volume tray widget.
+- **Mission-Critical Recommendations:**
+    - Set a different device as the default output in KDE's audio tray widget to prevent background applications from interfering with the Pro Audio interface.
+    - Close applications that access multiple audio devices simultaneously.
+- **Latency Management:**
+    - **Current issue:** Automatic latency negotiation in PipeWire is not yet fully reliable for Pro Audio use.
+    - **Solution:** Manually fix PipeWire's quantum clock settings:
+        - Create pipewire config file: `sudo mkdir /etc/pipewire` and `sudo cp /usr/share/pipewire/pipewire.conf /etc/pipewire/`
+        - In `/etc/pipewire/pipewire.conf`, uncomment and set `default.clock.quantum` and `default.clock.max-quantum` **(Both should be identical)**.
+        - Optionally, set `default.clock.rate` and `default.clock.allowed-rates` similarly for fixed sample rates.
+        - Restart PipeWire: systemctl --user restart pipewire pipewire-pulse and systemctl --user daemon-reload
+- **Pipewire APIs:**
+    - For PipeWire JACK API:
+        - Latency can be set by starting applications like this: `PIPEWIRE_LATENCY="1024/48000" bitwig-studio`
+    - For PipeWire ALSA API:
+        - Applications must support PipeWire's virtual ALSA device. Some apps (e.g., DaVinci Resolve) work despite being ALSA-only, others refuse to communicate with non-physical devices, which makes them incompatible with Pipewire.
+- **PipeWire Latency Behavior:**
+    - Latency handling in PipeWire works fundamentally differently than in JACK. In JACK, ALSA is reconfigured at the start of the JACK daemon, and the configuration remains static until JACK is stopped. PipeWire, on the other hand, abstracts most of the communication with ALSA even in Pro Audio mode and usually automatically selects the best settings.
+        - Applications do not directly configure ALSA when setting up their requested buffer size. Instead, they pass their request to PipeWire, which tries to implement it in ALSA as accurately and stably as possible.
+        - As a result, PipeWire clients do not configure a period number, and the buffer size they request is a **PipeWire buffer, not an ALSA buffer**. Therefore, the traditional JACK latency calculations (buffer size × periods) do not apply to PipeWire.
+    - PipeWire itself configures ALSA with a very high number of periods, not to define the working latency but simply to allow seamless switching between different latency settings.
+        - This means that when an application calculates latency based only on the requested buffer size (without multiplying by the period number), the result is correct — similar to how Windows applications handle audio buffer latency (e.g., Bitwig Studio displays the correct latency value).
+    - Only with batch devices (mainly very big/special USB interfaces with subdevices) using timer-based scheduling (instead of IRQ scheduling) you should add about +50% to the effective buffer/latency. For example, a 10ms buffer would result in approximately 15ms of effective latency, and 5ms would become 7.5ms.
+    - It is **no longer necessary** in PipeWire to stick to "even" millisecond buffer values for USB devices (e.g., 240 samples at 48kHz for 5ms or 480 samples for 10ms) — any value generally works.
+    - In Pro Audio profiles, devices are usually operated in **IRQ mode** (low-latency interrupt scheduling). Only if an interface exposes multiple subdevices via UCM, PipeWire may automatically switch to **timer mode**, because IRQ scheduling does not work well with multiple subdevices.
+        - Manual adjustment to force IRQ mode can still be attempted if needed, but most interfaces are not affected anyway.
+        - You can check whether a device is operating in IRQ mode by running: `pw-dump | grep tsched`
+            - If `"api.alsa.disable-tsched"`: true appears in the output (for devices in Pro Audio mode), IRQ mode is active. Otherwise, the device is running in timer mode and may experience the +50% additional buffer.
+        - If multiple devices are combined and used simultaneously within a single application, PipeWire will also automatically use timer mode to ensure stable operation across all devices — again, resulting in the +50% additional latency.
+
+### Potential Further Optimizations (Not Yet Implemented, Usually Not Needed)
+- **CPU Isolation & Pinning:**
+    - Reserving CPU cores 0-1 for the system and dedicating others exclusively to audio (ALSA, PipeWire, DAWs, USB interrupts) could allow extremely low, stable latencies.
+    - Requires considerable setup effort.
+- **CPU Governor:**
+    - Setting governor to "Performance" showed no significant improvements but can be tested via KDE’s battery/performance tray widget or `powerprofilesctl`.
+- **Boot Parameter:** `mitigations=off`
+    - Disabling CPU vulnerability mitigations can improve performance but leaves the system exposed to Spectre/Meltdown attacks. Use only as a last resort.
+- **CPU Power States:**
+    - Forcing CPUs to stay fully active can reduce latency but increases heat and power consumption drastically.
+        - Example udev rule: [Ardour 99-cpu-dma-latency.rules](https://github.com/Ardour/ardour/blob/master/tools/udev/99-cpu-dma-latency.rules)
+    - Apply with: `sudo udevadm control --reload-rules` and `sudo udevadm trigger`
+- **IRQ Prioritization:**
+    - Using tools like `rtirq` or `rtcirqus`:
+        - `rtirq`: Flexible, manual prioritization.
+        - `rtcirqus`: Newer tool; Automatic, but less configurable as of May 2024.
+        - Note: `threadirqs` kernel option is necessary for these applications and already enabled by this script.
+- **USB Stability:**
+    - Setting boot parameter `usbcore.autosuspend=-1` can improve USB reliability but increases power usage. Disabled by default.
+- **Memory Locking:**
+    - Editing `/etc/security/limits.d/25-pw-rlimits.conf` to set `memlock unlimited` can allow larger locked memory allocations.
+        **Warning:** Can cause freezes if applications reserve excessive memory. Only needed with special memory-heavy setups.
+
 ## Miscellaneous
 
 ### Script Issues

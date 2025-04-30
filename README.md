@@ -119,7 +119,8 @@ Security level | Description | Notes
     - Improves power usage, interrupt handling, and latency. BIOS/hardware-switch disablement is best.
 
 ### Verify important Configurations
-- Verify script
+
+Use the included check.sh script after a restart to check the most important settings
 
 ## Studio (Audio) Setup Notes
 
@@ -147,7 +148,7 @@ Security level | Description | Notes
     - General/non-pro-audio desktop applications are not optimized for low-latency audio on Linux. They do not auto-adjust CPU priorities, causing minor audio glitches under background load (not always counted as xruns by PipeWire) at lower buffer sizes. This issue should lessen in future years. Until then it is not recommended to set Pipewires default buffer size below 512 if stable non-pro-audio is a requirement.
         - Important: These glitches are application-side dropouts, not PipeWire or ALSA failures. Windows handles this via background services adjusting priorities dynamically; Linux does not, requiring manual tuning if necessary.
 
-### PipeWire / Audio Stack Best Practices
+### PipeWire / Audio Stack Notes
 - **USB Audio Devices:**
     - Most USB audio interfaces are class-compliant. Simply plug them in and set them to "Pro Audio" mode in KDE's volume tray widget.
 - **Mission-Critical Recommendations:**
@@ -201,6 +202,10 @@ Security level | Description | Notes
 - **Memory Locking:**
     - Editing `/etc/security/limits.d/25-pw-rlimits.conf` to set `memlock unlimited` can allow larger locked memory allocations.
         **Warning:** Can cause freezes if applications reserve excessive memory. Only needed with special memory-heavy setups.
+- **Preinstalling rtcqs:**
+    - https://codeberg.org/rtcqs/rtcqs
+        - This tool tests many different realtime optimizations, most necessary stuff is covered by my own check.sh script though
+        - Installing it with an AppImage or a Flatpak would be prefered as it installs a lot of Python-Dependencies
 
 ## Miscellaneous
 

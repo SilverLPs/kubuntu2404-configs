@@ -26,6 +26,7 @@ declare -A valid_args=(
   ["--realtime"]=0
   ["--lighttheme"]=0
   ["--lighttheme-darkplasma"]=0
+  ["--studio"]=0
   ["--tuxedo"]=0
 )
 
@@ -44,6 +45,7 @@ done
 sudo_commands=""
 [[ ${valid_args["--system"]} -eq 1 ]] && sudo_commands+="bash ./system_config/01-default_system_config.sh"$'\n'
 [[ ${valid_args["--realtime"]} -eq 1 ]] && sudo_commands+="bash ./system_config/02-default_system_config_user_realtime_permissions.sh"$'\n'
+[[ ${valid_args["--studio"]} -eq 1 ]] && sudo_commands+="bash ./system_config/10-studio.sh"$'\n'
 
 if [[ -n "$sudo_commands" ]]; then
   sudo -s <<HERE

@@ -24,6 +24,7 @@ Parameter | Description
 --lighttheme | Switch from the default dark theme to the light theme.
 --lighttheme-darkplasma | Change plasma elements like the taskbar, startmenu and widget to the dark theme look while using the light theme. The argument --lighttheme is still needed to active the light theme.
 --studio | Installs specific audio/video studio utilities and configurations. Does not install actual big applications only small tools!
+--focusrite_scarlett | Installt software for Focusrite Scarlett audio interfaces
 
 ## Pre-Usage
 

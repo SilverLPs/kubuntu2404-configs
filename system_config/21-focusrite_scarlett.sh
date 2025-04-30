@@ -16,14 +16,10 @@ if [[ "$(pwd)" != "$SCRIPTDIR" ]]; then
     exit 1
 fi
 
-echo "Starting studio configuration"
+echo "Starting focusrite scarlett configuration"
 echo
 
-# Install studio software from Ubuntu repos
+# Install Focusrite Scarlett GUI software from Ubuntu repos
 apt-get update
-apt-get install -q -y rt-tests raysession carla carla-data carla-vst carla-lv2
-echo
-
-# Install studio software from Flathub
-flatpak install --noninteractive flathub io.github.dimtpap.coppwr
+apt-get install -q -y alsa-scarlett-gui
 echo

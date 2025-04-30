@@ -28,6 +28,7 @@ declare -A valid_args=(
   ["--lighttheme-darkplasma"]=0
   ["--studio"]=0
   ["--tuxedo"]=0
+  ["--focusrite_scarlett"]=0
 )
 
 # Process arguments that have been passed when starting this script
@@ -46,6 +47,7 @@ sudo_commands=""
 [[ ${valid_args["--system"]} -eq 1 ]] && sudo_commands+="bash ./system_config/01-default_system_config.sh"$'\n'
 [[ ${valid_args["--realtime"]} -eq 1 ]] && sudo_commands+="bash ./system_config/02-default_system_config_user_realtime_permissions.sh"$'\n'
 [[ ${valid_args["--studio"]} -eq 1 ]] && sudo_commands+="bash ./system_config/10-studio.sh"$'\n'
+[[ ${valid_args["--focusrite_scarlett"]} -eq 1 ]] && sudo_commands+="bash ./system_config/21-focusrite_scarlett.sh"$'\n'
 
 if [[ -n "$sudo_commands" ]]; then
   sudo -s <<HERE

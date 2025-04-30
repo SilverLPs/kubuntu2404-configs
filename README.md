@@ -8,10 +8,12 @@ This is just a personal project I worked on for my own needs. It’s definitely 
 > [!NOTE]
 > The output may exceed the visible area in Konsole, so it will be saved (STDERR + STDOUT) to a log file in `~/.local/share`.
 
+If not run with any arguments (like in the command below), this script will assume you are on a desktop-environment and will show you GUI interfaces like a menu to choose which parts of the script you want to run. If you want to run this script in a non-desktop-environment you will need to specify at least one argument!
+
 ```bash
 cd "$HOME/.local/share"
 git clone https://github.com/SilverLPs/kubuntu2404-configs.git
-./kubuntu2404-configs/run.sh --system --user |& tee -a "$HOME/.local/share/kubuntu2404-configs-$(date +\%Y\%m\%d)-$(date +\%H\%M\%S).log"
+./kubuntu2404-configs/run.sh |& tee -a "$HOME/.local/share/kubuntu2404-configs-$(date +\%Y\%m\%d)-$(date +\%H\%M\%S).log"
 ```
 
 ### Arguments:

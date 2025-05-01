@@ -23,7 +23,6 @@ add_valid_arg "--realtime"
 add_valid_arg "--lighttheme"
 add_valid_arg "--lighttheme-darkplasma"
 add_valid_arg "--studio"
-add_valid_arg "--tuxedo"
 add_valid_arg "--focusrite_scarlett"
 
 # If started without arguments show GUI window to choose options

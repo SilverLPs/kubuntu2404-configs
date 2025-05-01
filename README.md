@@ -54,6 +54,8 @@ Parameter | Description
 
 ### Script Notes
 - These scripts were tested on installations following the above steps exactly. While they should work on any Kubuntu 24.04 system, unexpected behavior is possible if your setup differs. Use at your own (increased) risk.
+- The swappiness value set by this script avoids swapping even at large cost. While this guarantees performance and stability, in (almost) out of memory scenarios it can lead to processes being terminated by the Kernel because it tries to let most of the system stay responsive and quick. This kind of system behavior is more tailored towards power users than casual users. In general it is recommended to avoid out of memory scenarios.
+    - If responsiveness and stable low latency behaviour is of less importance than being able to safely fill up the memory, the swappiness value can be increased.
 
 ### Kubuntu Kernel Versions
 Ubuntu 24.04 (and its flavors like Kubuntu) support two kernel channels: GA and HWE.

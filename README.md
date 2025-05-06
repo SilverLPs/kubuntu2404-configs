@@ -119,6 +119,8 @@ Security level | Description | Notes
 - Add a Dolphin "places" shortcut to your `~/Apps` folder
 - Disable Bluetooth/Wi-Fi if unused
     - Improves power usage, interrupt handling, and latency. BIOS/hardware-switch disablement is best.
+- Enable tap-to-click for the touchpad if on a Laptop
+    - Enable natural scrolling/reversed scrolling if desired
 
 ### Verify important Configurations
 
@@ -229,6 +231,7 @@ Use the included check.sh script after a restart to check the most important set
 - Automating autologin is almost impossible at the moment, not because of the autologin setting itself (that is just 2 lines in the sddm.conf ini) but because of KDE wallet which will then ask for a password everytime once per login when an app tries to use the wallet. There are 2 solutions to this:
     - Set KDE wallet password to blank/empty, while insecure (defacto decrypted wallet!) it will avoid the password prompts completely while not affecting the functionality. However, there is no CLI tool or DBus call to automate this, it has to be done manually via GUI.
     - The professional solution would be to use something like pam_autologin, to use the password even for SDDM autologin and therefore automatically decrypt the Wallet at login. While it seems to be technically possible, it is not supported in Kubuntu 24.04 and there is [almost](https://bbs.archlinux.org/viewtopic.php?id=285783) no documentation on how to implement this. For the sake of stability, this should not be used unless it becomes supported in the future. Side note: A big chunk of the autologin situation could be solved in Kubuntu 26.04 which will most likely be able to use TPM disk decryption thanks to dracut. This will make autologin unnecessary in LUKS setups as the double password prompt will be solved with automatic TPM disk decryption.
+- Automating the tap to click option for touchpads is difficult as the $HOME/.config/touchpadxlibinputrc saves the key/value setting in a section that is names with a unique hex address that differs between touchpads.
 
 ## License and Disclaimer
 

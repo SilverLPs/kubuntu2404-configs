@@ -80,10 +80,6 @@ echo
 busctl call com.ubuntu.WhoopsiePreferences /com/ubuntu/WhoopsiePreferences com.ubuntu.WhoopsiePreferences SetReportCrashes b false
 busctl call com.ubuntu.WhoopsiePreferences /com/ubuntu/WhoopsiePreferences com.ubuntu.WhoopsiePreferences SetAutomaticallyReportCrashes b false
 busctl call com.ubuntu.WhoopsiePreferences /com/ubuntu/WhoopsiePreferences com.ubuntu.WhoopsiePreferences SetReportMetrics b false
-#(has only the Metrics option):
-cat /etc/whoopsie
-#(should be disabled):
-systemctl status whoopsie.path
 echo
 
 echo "Please reboot to apply all systems settings"

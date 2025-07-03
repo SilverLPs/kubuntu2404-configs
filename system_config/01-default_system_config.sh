@@ -82,5 +82,10 @@ busctl call com.ubuntu.WhoopsiePreferences /com/ubuntu/WhoopsiePreferences com.u
 busctl call com.ubuntu.WhoopsiePreferences /com/ubuntu/WhoopsiePreferences com.ubuntu.WhoopsiePreferences SetReportMetrics b false
 echo
 
+# Sets snap auto-update period from 4 times a day randomly inbetween every 6 hours to 1 time a day, at the first opportunity (usually directly after the first login a day)
+snap set system refresh.timer=00:00-24:00/1
+snap refresh --time
+echo
+
 echo "Please reboot to apply all systems settings"
 echo

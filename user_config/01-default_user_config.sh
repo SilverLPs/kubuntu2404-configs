@@ -110,6 +110,9 @@ echo
 # Disable clipboard history remaining after closed sessions
 kwriteconfig5 --file klipperrc --group 'General' --key 'KeepClipboardContents' --type bool false
 
+# Disable kubuntu-notification-helper reboot notification after updates (redundant to discovers notification and also affected to a bug, which causes it to literally spam the notification like crazy)
+kwriteconfig5 --file notificationhelper --group 'Event' --key 'hideRestartNotifier' --type bool true
+
 # Configure qpwgraph to not use the system tray at all (and therefore quit the process if the window is closed)
 # kwriteconfig5 really doesn't like many of the characters used in the qpwgraph config file. So this shouldn't be used on an existing config!
 echo "The following mv command is just a safety mechanism to prevent kwriteconfig5 from editing an existing file with incompatible characters. If it errors it probably means there is no config file for qpwgraph yet, which is absolutely fine"

@@ -87,5 +87,10 @@ snap set system refresh.timer=00:00-24:00/1
 snap refresh --time
 echo
 
+# Fully disable unattended upgrades (it's better to use Discover for auto-updates, by activating the option in system settings, as it will use the Offline Update feature then)
+cp -v ./configs/apt/10periodic /etc/apt/apt.conf.d/10periodic
+cp -v ./configs/apt/20auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
+echo
+
 echo "Please reboot to apply all systems settings"
 echo

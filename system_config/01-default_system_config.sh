@@ -48,11 +48,24 @@ update-initramfs -u -k all
 update-grub
 echo
 
-# Install useful default software from official package manager repository
+# Install useful default software from official package manager repository and remove unnecessary software and snap
 apt-get update
-apt-get remove -q -y plasma-vault
+apt-get remove -q -y plasma-vault firefox libreoffice-* elisa haruna konversation krdc neochat
+snap remove firefox firmware-updater gnome-42-2204 gtk-common-themes thunderbird
+snap remove core22
+snap remove bare
+snap remove snapd
+apt-get purge -q -y snapd plasma-discover-backend-snap
+apt-mark hold snapd
+apt-mark hold plasma-discover-backend-snap
 echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
-apt-get install -q -y curl net-tools iftop btop htop neofetch kubuntu-restricted-extras gstreamer1.0-vaapi libvdpau-va-gl1 fonts-crosextra-carlito fonts-crosextra-caladea exfatprogs synaptic chromium-browser chromium-browser-l10n chromium-codecs-ffmpeg-extra openjdk-17-jre vlc vlc-plugin-fluidsynth vlc-plugin-jack vlc-plugin-pipewire vlc-plugin-svg nfs-common flatpak kde-config-flatpak plasma-discover-backend-flatpak pipewire-jack pipewire-alsa latencytop kolourpaint cpu-x mediainfo mediainfo-gui
+apt-get install -q -y curl net-tools iftop btop htop neofetch kubuntu-restricted-extras gstreamer1.0-vaapi libvdpau-va-gl1 fonts-crosextra-carlito fonts-crosextra-caladea exfatprogs synaptic openjdk-17-jre vlc vlc-plugin-fluidsynth vlc-plugin-jack vlc-plugin-pipewire vlc-plugin-svg nfs-common flatpak kde-config-flatpak plasma-discover-backend-flatpak pipewire-jack pipewire-alsa latencytop kolourpaint cpu-x mediainfo mediainfo-gui remmina
+apt-get autoremove
+
+# Install Google Chrome
+# Unfortunately there are no chromium browsers in the official Ubuntu repositories without Snap on Ubuntu, so we need an official 3rd party browser like Google Chrome, Brave or Vivaldi. Could be replaced by Chromium again when the Flathub package becomes official and verified. Until then, most people would prefer Chrome over Brave, Vivaldi or Edge. Firefox is not an option and will probably never be an option again...
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+apt-get install ./google-chrome-stable_current_amd64.deb
 echo
 
 # Add Flathub to flatpak sources
@@ -80,11 +93,6 @@ echo
 busctl call com.ubuntu.WhoopsiePreferences /com/ubuntu/WhoopsiePreferences com.ubuntu.WhoopsiePreferences SetReportCrashes b false
 busctl call com.ubuntu.WhoopsiePreferences /com/ubuntu/WhoopsiePreferences com.ubuntu.WhoopsiePreferences SetAutomaticallyReportCrashes b false
 busctl call com.ubuntu.WhoopsiePreferences /com/ubuntu/WhoopsiePreferences com.ubuntu.WhoopsiePreferences SetReportMetrics b false
-echo
-
-# Sets snap auto-update period from 4 times a day randomly inbetween every 6 hours to 1 time a day, at the first opportunity (usually directly after the first login a day)
-snap set system refresh.timer=00:00-24:00/1
-snap refresh --time
 echo
 
 # Fully disable unattended upgrades (it's better to use Discover for auto-updates, by activating the option in system settings, as it will use the Offline Update feature then)

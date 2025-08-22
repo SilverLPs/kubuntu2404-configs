@@ -216,18 +216,13 @@ xdg-mime default vlc.desktop x-content/audio-cdda
 xdg-mime default vlc.desktop x-content/audio-player
 echo
 
-# Make Chromium the default browser (I can already feel the salt of the Anti-Chrome folks :D)
-xdg-mime default chromium_chromium.desktop x-scheme-handler/http
-xdg-mime default chromium_chromium.desktop x-scheme-handler/https
-xdg-settings set default-web-browser chromium_chromium.desktop
+# Make Chrome the default browser (I can already feel the salt of the Anti-Chrome folks :D)
+xdg-mime default google-chrome.desktop x-scheme-handler/http
+xdg-mime default google-chrome.desktop x-scheme-handler/https
+xdg-settings set default-web-browser google-chrome.desktop
 echo
 
-# Make Thunderbird the default mail application
-xdg-mime default thunderbird_thunderbird.desktop x-scheme-handler/mailto
-xdg-mime default thunderbird_thunderbird.desktop x-scheme-handler/mid
-echo
-
-# Configure chromium to use GTK-theme of KDE Plasma and to merge the tab bar into the window bar
+# Configure chrome to use GTK-theme of KDE Plasma and to merge the tab bar into the window bar
 bash ./modules/configure_chromium.sh
 echo
 

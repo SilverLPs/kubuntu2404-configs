@@ -35,7 +35,7 @@ kickoff.writeConfig("global", "Alt+F1")
 // Still needs one restart of plasmashell to laod the launchers correctly: plasmashell --replace
 // This is probably also related to the double backslashes before each comma issue. The double comma "fix" only prevents it from being written into the plasma configfile but internally it seems to be still a problem until plasmashell reloads it correctly from the plasma configfile.
 var launchers = [
-    "applications:chromium_chromium.desktop",
+    "applications:google-chrome.desktop",
     "preferred://filemanager",
     "applications:org.kde.plasma-systemmonitor.desktop"
 ]

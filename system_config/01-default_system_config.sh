@@ -60,7 +60,7 @@ apt-mark hold snapd
 apt-mark hold plasma-discover-backend-snap
 echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
 apt-get install -q -y curl net-tools iftop btop htop neofetch kubuntu-restricted-extras gstreamer1.0-vaapi libvdpau-va-gl1 fonts-crosextra-carlito fonts-crosextra-caladea exfatprogs synaptic openjdk-17-jre vlc vlc-plugin-fluidsynth vlc-plugin-jack vlc-plugin-pipewire vlc-plugin-svg nfs-common flatpak kde-config-flatpak plasma-discover-backend-flatpak pipewire-jack pipewire-alsa latencytop kolourpaint cpu-x mediainfo mediainfo-gui remmina
-apt-get autoremove
+apt-get autoremove -y
 
 # Install Google Chrome
 # Unfortunately there are no chromium browsers in the official Ubuntu repositories without Snap on Ubuntu, so we need an official 3rd party browser like Google Chrome, Brave or Vivaldi. Could be replaced by Chromium again when the Flathub package becomes official and verified. Until then, most people would prefer Chrome over Brave, Vivaldi or Edge. Firefox is not an option and will probably never be an option again...
